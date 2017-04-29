@@ -1,0 +1,17 @@
+version: '0.1.{build}'
+image: Visual Studio 2017
+
+environment:
+  DOCKER_USER: andrewarnott
+  DOCKER_PASS:
+    secure: zAlc1NciF/A/2JJZzJjazJDbVz+WjfBBwubfMk2ClB8=
+
+install:
+ - docker version
+
+build_script:
+ - docker build -t andrewarnott/win-buildagent .
+
+deploy_script:
+ - docker login -u="$env:DOCKER_USER" -p="$env:DOCKER_PASS"
+ - docker push andrewarnott/win-buildagent
