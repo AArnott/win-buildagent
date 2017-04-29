@@ -7,11 +7,13 @@ environment:
     secure: zAlc1NciF/A/2JJZzJjazJDbVz+WjfBBwubfMk2ClB8=
 
 install:
- - docker version
+- docker version
 
 build_script:
- - docker build -t andrewarnott/win-buildagent .
+- docker build -t andrewarnott/win-buildagent .
 
 deploy_script:
- - docker login -u="%DOCKER_USER%" -p="%DOCKER_PASS%"
- - docker push andrewarnott/win-buildagent
+- ps: |
+    echo $env:DOCKER_USER
+    docker login -u="$env:DOCKER_USER" -p="$env:DOCKER_PASS"
+    docker push andrewarnott/win-buildagent
