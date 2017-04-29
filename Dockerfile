@@ -14,4 +14,6 @@ RUN GitForWindows.exe /log="gitforwindows.log" /suppressmsgboxes /silent
 ADD https://nodejs.org/dist/v6.10.2/node-v6.10.2-x64.msi node.msi
 RUN start /wait msiexec.exe /i "node.msi"  /passive /norestart /l*v node.js.log
 
+RUN npm i -g gulp
+
 WORKDIR /

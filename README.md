@@ -9,4 +9,5 @@ Docker image requires Windows 10 and includes:
 * MSBuild 14.0
 * MSBuild 15.1
 * Node.js 6.10.2
+  * gulp
 * Git for Windows 2.12.2.2
