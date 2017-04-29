@@ -13,5 +13,5 @@ build_script:
  - docker build -t andrewarnott/win-buildagent .
 
 deploy_script:
- - docker login -u="$env:DOCKER_USER" -p="$env:DOCKER_PASS"
+ - docker login -u="%DOCKER_USER%" -p="%DOCKER_PASS%"
  - docker push andrewarnott/win-buildagent
