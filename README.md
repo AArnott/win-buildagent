@@ -12,4 +12,5 @@ Docker image requires Windows 10 and includes:
   * dotnet CLI
 * Node.js 6.10.2
   * gulp
+* Python 2.7.13
 * Git for Windows 2.12.2.2
