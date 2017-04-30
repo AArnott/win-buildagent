@@ -10,6 +10,7 @@ Docker image requires Windows 10 and includes:
 * Visual Studio 2017 Community
   * MSBuild 15.1
   * dotnet CLI
+* Mono 4.8.1
 * Node.js 6.10.2
   * gulp
 * Python 2.7.13
