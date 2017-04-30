@@ -31,6 +31,8 @@ RUN start /wait msiexec.exe /i "python.msi" /passive /norestart /l*v python.log
 ADD https://download.mono-project.com/archive/4.8.1/windows-installer/mono-4.8.1.0-gtksharp-2.12.44-win32-0.msi mono.msi
 RUN start /wait msiexec.exe /i "mono.msi" /passive /norestart /l*v mono.log
 
+RUN @powershell -NoProfile -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
+
 ADD template /
 
 WORKDIR /

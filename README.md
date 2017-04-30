@@ -15,3 +15,4 @@ Docker image requires Windows 10 and includes:
   * gulp
 * Python 2.7.13
 * Git for Windows 2.12.2.2
+* Chocolatey
