@@ -21,4 +21,6 @@ RUN npm i -g gulp
 ADD https://www.python.org/ftp/python/2.7.13/python-2.7.13.msi python.msi
 RUN start /wait msiexec.exe /i "python.msi" /passive /norestart /l*v python.log
 
+ADD template /
+
 WORKDIR /
