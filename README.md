@@ -6,6 +6,7 @@ Docker image build for a windows build agent
 
 Docker image requires Windows 10 and includes:
 
+* .NET Framework 3.5 and 4.6.2
 * MSBuild 14.0
 * Visual Studio 2017 Community
   * MSBuild 15.1
