@@ -18,7 +18,7 @@ RUN vs_community.exe -q --wait --includeRecommended \
 RUN dotnet new classlib -o dotnetCacheExpand
 RUN rd /s /q dotnetCacheExpand
 
-ADD https://github.com/git-for-windows/git/releases/download/v2.14.2.windows.1/Git-2.14.2-64-bit.exe GitForWindows.exe
+ADD https://github.com/git-for-windows/git/releases/download/v2.16.2.windows.1/Git-2.16.2-64-bit.exe GitForWindows.exe
 RUN GitForWindows.exe /log="gitforwindows.log" /suppressmsgboxes /silent
 
 ADD https://nodejs.org/dist/v6.10.2/node-v6.10.2-x64.msi node.msi
