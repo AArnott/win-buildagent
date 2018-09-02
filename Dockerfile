@@ -5,6 +5,21 @@ WORKDIR install.src
 ADD https://download.microsoft.com/download/E/E/D/EEDF18A8-4AED-4CE0-BEBE-70A83094FC5A/BuildTools_Full.exe msbuild14.exe
 RUN start /wait msbuild14.exe /q /full /log msbuild14.log
 
+ADD https://www.python.org/ftp/python/2.7.15/python-2.7.15.amd64.msi python.msi
+RUN start /wait msiexec.exe /i "python.msi" /passive /norestart /l*v python.log
+
+RUN @powershell -NoProfile -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
+
+ADD https://nodejs.org/dist/v8.11.4/node-v8.11.4-x64.msi node.msi
+RUN start /wait msiexec.exe /i "node.msi"  /passive /norestart /l*v node.js.log
+RUN npm i -g gulp
+
+ADD https://download.mono-project.com/archive/5.14.0/windows-installer/mono-5.14.0.177-x64-0.msi mono.msi
+RUN start /wait msiexec.exe /i "mono.msi" /passive /norestart /l*v mono.log
+
+ADD https://github.com/git-for-windows/git/releases/download/v2.18.0.windows.1/Git-2.18.0-64-bit.exe GitForWindows.exe
+RUN GitForWindows.exe /log="gitforwindows.log" /suppressmsgboxes /silent
+
 ADD https://aka.ms/vs/15/release/vs_community.exe vs_community.exe
 RUN vs_community.exe -q --wait --includeRecommended \
     --add Microsoft.VisualStudio.Workload.MSBuildTools \
@@ -17,21 +32,6 @@ RUN vs_community.exe -q --wait --includeRecommended \
 # Exercise dotnet.exe a bit so it expands its package cache
 RUN dotnet new classlib -o dotnetCacheExpand \
     && rd /s /q dotnetCacheExpand
-
-ADD https://github.com/git-for-windows/git/releases/download/v2.18.0.windows.1/Git-2.18.0-64-bit.exe GitForWindows.exe
-RUN GitForWindows.exe /log="gitforwindows.log" /suppressmsgboxes /silent
-
-ADD https://nodejs.org/dist/v8.11.4/node-v8.11.4-x64.msi node.msi
-RUN start /wait msiexec.exe /i "node.msi"  /passive /norestart /l*v node.js.log
-RUN npm i -g gulp
-
-ADD https://www.python.org/ftp/python/2.7.15/python-2.7.15.amd64.msi python.msi
-RUN start /wait msiexec.exe /i "python.msi" /passive /norestart /l*v python.log
-
-ADD https://download.mono-project.com/archive/5.14.0/windows-installer/mono-5.14.0.177-x64-0.msi mono.msi
-RUN start /wait msiexec.exe /i "mono.msi" /passive /norestart /l*v mono.log
-
-RUN @powershell -NoProfile -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
 
 ADD template /
 
