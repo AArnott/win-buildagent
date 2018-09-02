@@ -15,20 +15,20 @@ RUN vs_community.exe -q --wait --includeRecommended \
     --add Microsoft.Net.ComponentGroup.4.7.DeveloperTools \
     --add Microsoft.Net.Component.3.5.DeveloperTools
 # Exercise dotnet.exe a bit so it expands its package cache
-RUN dotnet new classlib -o dotnetCacheExpand
-RUN rd /s /q dotnetCacheExpand
+RUN dotnet new classlib -o dotnetCacheExpand \
+    && rd /s /q dotnetCacheExpand
 
-ADD https://github.com/git-for-windows/git/releases/download/v2.16.2.windows.1/Git-2.16.2-64-bit.exe GitForWindows.exe
+ADD https://github.com/git-for-windows/git/releases/download/v2.18.0.windows.1/Git-2.18.0-64-bit.exe GitForWindows.exe
 RUN GitForWindows.exe /log="gitforwindows.log" /suppressmsgboxes /silent
 
-ADD https://nodejs.org/dist/v6.10.2/node-v6.10.2-x64.msi node.msi
+ADD https://nodejs.org/dist/v8.11.4/node-v8.11.4-x64.msi node.msi
 RUN start /wait msiexec.exe /i "node.msi"  /passive /norestart /l*v node.js.log
 RUN npm i -g gulp
 
-ADD https://www.python.org/ftp/python/2.7.13/python-2.7.13.msi python.msi
+ADD https://www.python.org/ftp/python/2.7.15/python-2.7.15.amd64.msi python.msi
 RUN start /wait msiexec.exe /i "python.msi" /passive /norestart /l*v python.log
 
-ADD https://download.mono-project.com/archive/4.8.1/windows-installer/mono-4.8.1.0-gtksharp-2.12.44-win32-0.msi mono.msi
+ADD https://download.mono-project.com/archive/5.14.0/windows-installer/mono-5.14.0.177-x64-0.msi mono.msi
 RUN start /wait msiexec.exe /i "mono.msi" /passive /norestart /l*v mono.log
 
 RUN @powershell -NoProfile -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
