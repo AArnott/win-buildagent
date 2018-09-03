@@ -1,0 +1,25 @@
+queue:
+  name: Hosted VS2017
+  timeoutInMinutes: 300
+
+trigger:
+  branches:
+    include: ["master"]
+  paths:
+    exclude: [".github", "doc", "*.md", ".appveyor.yml"]
+
+variables:
+  DOCKER_USER: andrewarnott
+  DOCKER_SERVER:
+
+steps:
+- powershell: docker build -t andrewarnott/win-buildagent .
+  displayName: Build win-buildagent image
+
+- powershell: docker build -t andrewarnott/win-vsts-agent ./vsts-agent
+  displayName: Build win-vsts-agent image
+
+- powershell: |
+    docker login -u="$(DOCKER_USER)" -p="$(DOCKER_PASS)" $(DOCKER_SERVER)
+    docker push andrewarnott/win-buildagent
+    docker push andrewarnott/win-vsts-agent

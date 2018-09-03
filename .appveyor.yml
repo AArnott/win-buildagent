@@ -1,5 +1,15 @@
 version: '0.1.{build}'
 image: Visual Studio 2017
+branches:
+  only:
+  - master
+  - /^v\d+(?:\.\d+)?$/
+  - /[\b_]validate\b/
+skip_commits:
+  files:
+    - doc/*
+    - '**/*.md'
+    - .vsts-ci.yml
 
 environment:
   DOCKER_USER: andrewarnott
