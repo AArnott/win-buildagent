@@ -33,6 +33,9 @@ RUN vs_community.exe -q --wait --includeRecommended \
 RUN dotnet new classlib -o dotnetCacheExpand \
     && rd /s /q dotnetCacheExpand
 
+ADD https://dot.net/v1/dotnet-install.ps1 dotnet-install.ps1
+RUN powershell -c "./dotnet-install.ps1 -Version 2.1.300 -InstallDir $env:ProgramFiles\\dotnet"
+
 ADD template /
 
 WORKDIR /
