@@ -7,13 +7,14 @@ Docker image build for a windows build agent
 Docker image requires Windows 10 and includes:
 
 * .NET Framework 3.5 and 4.6.2
-* MSBuild 14.0
+* Visual Studio 2015 Community
 * Visual Studio 2017 Community
-  * MSBuild 15.1
+  * MSBuild 15
   * dotnet CLI
-* Mono 4.8.1
-* Node.js 6.10.2
+    * v2.1.300 SDK
+* Mono 5.14.0
+* Node.js 8.11.4
   * gulp
-* Python 2.7.13
-* Git for Windows 2.12.2.2
+* Python 2.7.15
+* Git for Windows 2.18.0
 * Chocolatey
