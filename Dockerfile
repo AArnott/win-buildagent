@@ -8,7 +8,7 @@ RUN start /wait msbuild14.exe /q /full /log msbuild14.log
 ADD https://www.python.org/ftp/python/2.7.15/python-2.7.15.amd64.msi python.msi
 RUN start /wait msiexec.exe /i "python.msi" /passive /norestart /l*v python.log
 
-RUN @powershell -NoProfile -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
+RUN @powershell -NoProfile -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin" && choco feature enable -n allowGlobalConfirmation
 
 ADD https://nodejs.org/dist/v8.11.4/node-v8.11.4-x64.msi node.msi
 RUN start /wait msiexec.exe /i "node.msi"  /passive /norestart /l*v node.js.log
