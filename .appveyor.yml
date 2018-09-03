@@ -11,10 +11,12 @@ install:
 
 build_script:
 - docker build -t andrewarnott/win-buildagent .
+- docker build -t andrewarnott/win-vsts-agent ./vsts-agent
 
 deploy_script:
 - ps: |
     if (!$env:APPVEYOR_PULL_REQUEST_NUMBER -and $env:APPVEYOR_REPO_BRANCH -eq 'master') {
         docker login -u="$env:DOCKER_USER" -p="$env:DOCKER_PASS"
         docker push andrewarnott/win-buildagent
+        docker push andrewarnott/win-vsts-agent
     }
