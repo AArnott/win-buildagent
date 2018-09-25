@@ -24,21 +24,35 @@ RUN start /wait msiexec.exe /i "mono.msi" /passive /norestart /l*v mono.log
 ADD https://github.com/git-for-windows/git/releases/download/v2.18.0.windows.1/Git-2.18.0-64-bit.exe GitForWindows.exe
 RUN GitForWindows.exe /log="gitforwindows.log" /suppressmsgboxes /silent
 
-ADD https://aka.ms/vs/15/release/vs_community.exe vs_community.exe
-RUN vs_community.exe -q --wait --norestart --nocache --includeRecommended \
+# Restore the default Windows shell for correct batch processing below.
+SHELL ["cmd", "/S", "/C"]
+
+ADD https://aka.ms/vs/15/release/vs_buildtools.exe vs_buildtools.exe
+RUN vs_buildtools.exe -q --wait --norestart --nocache \
+    --installPath c:\BuildTools \
     --add Microsoft.VisualStudio.Workload.MSBuildTools \
-    --add Microsoft.VisualStudio.Workload.NetCoreTools \
+    --add Microsoft.VisualStudio.Workload.NetCoreBuildTools \
+    --add Microsoft.VisualStudio.Workload.VCTools \
     --add Microsoft.Net.ComponentGroup.DevelopmentPrerequisites \
     --add Microsoft.Net.ComponentGroup.TargetingPacks.Common \
     --add Microsoft.Net.ComponentGroup.4.6.2.DeveloperTools \
     --add Microsoft.Net.ComponentGroup.4.7.DeveloperTools \
     --add Microsoft.Net.Component.3.5.DeveloperTools
-# Exercise dotnet.exe a bit so it expands its package cache
-RUN dotnet new classlib -o dotnetCacheExpand \
-    && rd /s /q dotnetCacheExpand
 
+# Install the .NET Core SDK, and exercise dotnet.exe a bit so it expands its package cache
 ADD https://dot.net/v1/dotnet-install.ps1 dotnet-install.ps1
-RUN powershell -c "./dotnet-install.ps1 -Version 2.1.300 -InstallDir $env:ProgramFiles\\dotnet"
+RUN powershell.exe -c " \
+    ./dotnet-install.ps1 -InstallDir $env:ProgramFiles\\dotnet -Version 2.1.202 ; \
+    ./dotnet-install.ps1 -InstallDir $env:ProgramFiles\\dotnet -Version 2.1.300 ; \
+    ./dotnet-install.ps1 -InstallDir $env:ProgramFiles\\dotnet -Version 2.1.301 ; \
+    ./dotnet-install.ps1 -InstallDir $env:ProgramFiles\\dotnet -Version 2.1.302 ; \
+    ./dotnet-install.ps1 -InstallDir $env:ProgramFiles\\dotnet -Version 2.1.400 ; \
+    ./dotnet-install.ps1 -InstallDir $env:ProgramFiles\\dotnet -Version 2.1.401 ; \
+    ./dotnet-install.ps1 -InstallDir $env:ProgramFiles\\dotnet -Version 1.0.11  -Runtime dotnet ; \
+    ./dotnet-install.ps1 -InstallDir $env:ProgramFiles\\dotnet -Version 1.1.8   -Runtime dotnet ; \
+    ./dotnet-install.ps1 -InstallDir $env:ProgramFiles\\dotnet -Version 2.0.7   -Runtime dotnet ; \
+    dotnet new classlib -o dotnetCacheExpand ; \
+    del -rec -for dotnetCacheExpand"
 
 ADD template /
 
@@ -47,10 +61,11 @@ ENV \
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 \
     DOTNET_CLI_TELEMETRY_OPTOUT=1
 
-WORKDIR /
+WORKDIR C:\\Users\\ContainerUser
 
 # Start developer command prompt with any other commands specified.
-ENTRYPOINT C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat &&
+# We do NOT include env.mono.bat in this because mono on the PATH can screw up msbuild, so it should be OPT-IN.
+ENTRYPOINT c:\env.vs2017.bat &&
 
 # Default to PowerShell if no other command specified.
 CMD ["powershell.exe", "-NoLogo", "-ExecutionPolicy", "Bypass"]

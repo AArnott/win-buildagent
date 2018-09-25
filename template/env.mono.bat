@@ -1,1 +1,1 @@
-"%ProgramFiles(x86)%\Mono\bin\setmonopath.bat"
+"%ProgramFiles%\Mono\bin\setmonopath.bat"
