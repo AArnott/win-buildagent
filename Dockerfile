@@ -1,3 +1,7 @@
+# Use the -m 2GB switch so that the VS 2017 installer has all the memory it requires.
+# https://docs.microsoft.com/en-us/visualstudio/install/build-tools-container?view=vs-2017
+# docker build -t andrewarnott/win-buildagent -m 2GB .
+
 FROM microsoft/dotnet-framework:3.5
 LABEL maintainer andrewarnott@gmail.com
 WORKDIR install.src
@@ -21,7 +25,7 @@ ADD https://github.com/git-for-windows/git/releases/download/v2.18.0.windows.1/G
 RUN GitForWindows.exe /log="gitforwindows.log" /suppressmsgboxes /silent
 
 ADD https://aka.ms/vs/15/release/vs_community.exe vs_community.exe
-RUN vs_community.exe -q --wait --includeRecommended \
+RUN vs_community.exe -q --wait --norestart --nocache --includeRecommended \
     --add Microsoft.VisualStudio.Workload.MSBuildTools \
     --add Microsoft.VisualStudio.Workload.NetCoreTools \
     --add Microsoft.Net.ComponentGroup.DevelopmentPrerequisites \
@@ -38,4 +42,15 @@ RUN powershell -c "./dotnet-install.ps1 -Version 2.1.300 -InstallDir $env:Progra
 
 ADD template /
 
+ENV \
+    DOTNET_RUNNING_IN_CONTAINER=true \
+    DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 \
+    DOTNET_CLI_TELEMETRY_OPTOUT=1
+
 WORKDIR /
+
+# Start developer command prompt with any other commands specified.
+ENTRYPOINT C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat &&
+
+# Default to PowerShell if no other command specified.
+CMD ["powershell.exe", "-NoLogo", "-ExecutionPolicy", "Bypass"]
