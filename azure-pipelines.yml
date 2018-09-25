@@ -9,14 +9,8 @@ trigger:
     exclude: [".github", "doc", "*.md", ".appveyor.yml"]
 
 steps:
-- task: Docker@0
+- script: docker build -m 2GB -t andrewarnott/win-buildagent:$(Build.BuildId) -t andrewarnott/win-buildagent:latest -t andrewarnott.azurecr.io/win-buildagent:latest -t andrewarnott.azurecr.io/win-buildagent:$(Build.BuildId) -t win-buildagent:$(Build.BuildId) .
   displayName: Build win-buildagent
-  inputs:
-    arguments: '-m 2GB -t andrewarnott/win-buildagent:$(Build.BuildId) -t andrewarnott/win-buildagent:latest -t andrewarnott.azurecr.io/win-buildagent:latest -t andrewarnott.azurecr.io/win-buildagent:$(Build.BuildId)'
-    imageName: win-buildagent:$(Build.BuildId)
-    qualifyImageName: false
-    includeSourceTags: true
-    includeLatestTag: true
 
 - task: Docker@0
   displayName: Build win-vsts-agent
