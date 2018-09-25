@@ -12,7 +12,7 @@ steps:
 - task: Docker@0
   displayName: Build win-buildagent
   inputs:
-    arguments: '-t andrewarnott/win-buildagent:$(Build.BuildId) -t andrewarnott/win-buildagent:latest -t andrewarnott.azurecr.io/win-buildagent:latest -t andrewarnott.azurecr.io/win-buildagent:$(Build.BuildId)'
+    arguments: '-m 2GB -t andrewarnott/win-buildagent:$(Build.BuildId) -t andrewarnott/win-buildagent:latest -t andrewarnott.azurecr.io/win-buildagent:latest -t andrewarnott.azurecr.io/win-buildagent:$(Build.BuildId)'
     imageName: win-buildagent:$(Build.BuildId)
     qualifyImageName: false
     includeSourceTags: true
