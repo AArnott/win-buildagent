@@ -1,0 +1,72 @@
+queue:
+  name: Hosted VS2017
+  timeoutInMinutes: 300
+
+trigger:
+  branches:
+    include: ["master", "pipelines"]
+  paths:
+    exclude: [".github", "doc", "*.md", ".appveyor.yml"]
+
+steps:
+- task: Docker@0
+  displayName: Build win-buildagent
+  inputs:
+    arguments: '-t andrewarnott/win-buildagent:$(Build.BuildId) -t andrewarnott/win-buildagent:latest -t andrewarnott.azurecr.io/win-buildagent:latest -t andrewarnott.azurecr.io/win-buildagent:$(Build.BuildId)'
+    imageName: win-buildagent:$(Build.BuildId)
+    qualifyImageName: false
+    includeSourceTags: true
+    includeLatestTag: true
+
+- task: Docker@0
+  displayName: Build win-vsts-agent
+  inputs:
+    dockerFile: vsts-agent/Dockerfile
+    arguments: '-t andrewarnott/win-vsts-agent:$(Build.BuildId) -t andrewarnott/win-vsts-agent:latest -t andrewarnott.azurecr.io/win-vsts-agent:latest -t andrewarnott.azurecr.io/win-vsts-agent:$(Build.BuildId)'
+    imageName: win-vsts-agent:$(Build.BuildId)
+    qualifyImageName: false
+    includeSourceTags: true
+    includeLatestTag: true
+
+- task: Docker@0
+  displayName: Push win-buildagent to ACR
+  inputs:
+    azureSubscription: Azure Free Trial (c5eda4ed-4681-4034-8835-65d67e7d4b7c)
+    azureContainerRegistry: '{"loginServer":"andrewarnott.azurecr.io", "id" : "/subscriptions/c5eda4ed-4681-4034-8835-65d67e7d4b7c/resourceGroups/OSS/providers/Microsoft.ContainerRegistry/registries/andrewarnott"}'
+    action: Push an image
+    imageName: win-buildagent:$(Build.BuildId)
+    includeSourceTags: true
+    includeLatestTag: true
+  enabled: false
+
+- task: Docker@0
+  displayName: Push win-vsts-agent to ACR
+  inputs:
+    containerregistrytype: Container Registry
+    dockerRegistryConnection: Docker Hub
+    action: Push an image
+    imageName: win-vsts-agent:$(Build.BuildId)
+    includeSourceTags: true
+    includeLatestTag: true
+  enabled: false
+
+- task: Docker@0
+  displayName: Push win-buildagent to Docker Hub
+  inputs:
+    containerregistrytype: Container Registry
+    dockerRegistryConnection: Docker Hub
+    action: Push an image
+    imageName: andrewarnott/win-buildagent:$(Build.BuildId)
+    qualifyImageName: false
+    includeSourceTags: true
+    includeLatestTag: true
+
+- task: Docker@0
+  displayName: Push win-vsts-agent to Docker Hub
+  inputs:
+    containerregistrytype: Container Registry
+    dockerRegistryConnection: Docker Hub
+    action: Push an image
+    imageName: andrewarnott/win-vsts-agent:$(Build.BuildId)
+    includeSourceTags: true
+    includeLatestTag: true
