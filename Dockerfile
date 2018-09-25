@@ -12,7 +12,9 @@ RUN start /wait msbuild14.exe /q /full /log msbuild14.log
 ADD https://www.python.org/ftp/python/2.7.15/python-2.7.15.amd64.msi python.msi
 RUN start /wait msiexec.exe /i "python.msi" /passive /norestart /l*v python.log
 
-RUN @powershell -NoProfile -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin" && choco feature enable -n allowGlobalConfirmation
+RUN @powershell -NoProfile -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" \
+    && SET "PATH=%PATH%;%ALLUSERSPROFILE%\\chocolatey\\bin" \
+    && choco feature enable -n allowGlobalConfirmation
 
 ADD https://nodejs.org/dist/v8.11.4/node-v8.11.4-x64.msi node.msi
 RUN start /wait msiexec.exe /i "node.msi"  /passive /norestart /l*v node.js.log
@@ -27,12 +29,14 @@ RUN GitForWindows.exe /log="gitforwindows.log" /suppressmsgboxes /silent
 # Restore the default Windows shell for correct batch processing below.
 SHELL ["cmd", "/S", "/C"]
 
+# VS workload and component IDs: https://docs.microsoft.com/en-us/visualstudio/install/workload-and-component-ids?view=vs-2017
 ADD https://aka.ms/vs/15/release/vs_buildtools.exe vs_buildtools.exe
 RUN vs_buildtools.exe -q --wait --norestart --nocache \
     --installPath c:\BuildTools \
     --add Microsoft.VisualStudio.Workload.MSBuildTools \
     --add Microsoft.VisualStudio.Workload.NetCoreBuildTools \
     --add Microsoft.VisualStudio.Workload.VCTools \
+    --add Microsoft.VisualStudio.Workload.UniversalBuildTools \
     --add Microsoft.Net.ComponentGroup.DevelopmentPrerequisites \
     --add Microsoft.Net.ComponentGroup.TargetingPacks.Common \
     --add Microsoft.Net.ComponentGroup.4.6.2.DeveloperTools \
