@@ -17,7 +17,7 @@ RUN npm i -g gulp
 ADD https://download.mono-project.com/archive/5.14.0/windows-installer/mono-5.14.0.177-x64-0.msi mono.msi
 RUN start /wait msiexec.exe /i "mono.msi" /passive /norestart /l*v mono.log
 
-ADD https://github.com/git-for-windows/git/releases/download/v2.18.0.windows.1/Git-2.18.0-64-bit.exe GitForWindows.exe
+ADD https://github.com/git-for-windows/git/releases/download/v2.21.0.windows.1/Git-2.21.0-64-bit.exe GitForWindows.exe
 RUN GitForWindows.exe /log="gitforwindows.log" /suppressmsgboxes /silent
 
 ADD https://aka.ms/vs/15/release/vs_community.exe vs_community.exe
