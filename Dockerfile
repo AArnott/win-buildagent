@@ -34,16 +34,19 @@ RUN start /wait msiexec.exe /i "mono.msi" /passive /norestart /l*v mono.log
 ADD https://github.com/git-for-windows/git/releases/download/v2.21.0.windows.1/Git-2.21.0-64-bit.exe GitForWindows.exe
 RUN GitForWindows.exe /log="gitforwindows.log" /suppressmsgboxes /silent
 
-# https://docs.microsoft.com/en-us/visualstudio/install/workload-and-component-ids?view=vs-2019
-ADD https://aka.ms/vs/16/release/vs_community.exe vs_community.exe
-RUN vs_community.exe -q --wait --norestart --nocache --includeRecommended \
-    --add Microsoft.VisualStudio.Workload.MSBuildTools \
-    --add Microsoft.VisualStudio.Workload.NetCoreTools \
-    --add Microsoft.Net.ComponentGroup.DevelopmentPrerequisites \
-    --add Microsoft.Net.ComponentGroup.TargetingPacks.Common \
-    --add Microsoft.Net.ComponentGroup.4.6.2.DeveloperTools \
-    --add Microsoft.Net.ComponentGroup.4.7.DeveloperTools \
-    --add Microsoft.Net.Component.3.5.DeveloperTools
+ADD https://aka.ms/vs/16/release/vs_buildtools.exe vs_buildtools.exe
+
+# Install Build Tools excluding workloads and components with known issues.
+# https://docs.microsoft.com/en-us/visualstudio/install/build-tools-container?view=vs-2019
+RUN vs_buildtools.exe -q --wait --norestart --nocache \
+    --installPath C:\BuildTools \
+    --all \
+    --remove Microsoft.VisualStudio.Component.Windows10SDK.10240 \
+    --remove Microsoft.VisualStudio.Component.Windows10SDK.10586 \
+    --remove Microsoft.VisualStudio.Component.Windows10SDK.14393 \
+    --remove Microsoft.VisualStudio.Component.Windows81SDK \
+ || IF "%ERRORLEVEL%"=="3010" EXIT 0
+
 # Exercise dotnet.exe a bit so it expands its package cache
 RUN dotnet new classlib -o dotnetCacheExpand \
     && rd /s /q dotnetCacheExpand
@@ -52,5 +55,11 @@ ADD https://dot.net/v1/dotnet-install.ps1 dotnet-install.ps1
 RUN powershell -c "./dotnet-install.ps1 -Version 2.2.105 -InstallDir $env:ProgramFiles\\dotnet"
 
 ADD template /
+
+# Start developer command prompt with any other commands specified.
+ENTRYPOINT C:\BuildTools\Common7\Tools\VsDevCmd.bat &&
+
+# Default to PowerShell if no other command specified.
+CMD ["powershell.exe", "-NoLogo", "-ExecutionPolicy", "Bypass"]
 
 WORKDIR /
