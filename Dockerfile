@@ -34,6 +34,14 @@ RUN start /wait msiexec.exe /i "mono.msi" /passive /norestart /l*v mono.log
 ADD https://github.com/git-for-windows/git/releases/download/v2.21.0.windows.1/Git-2.21.0-64-bit.exe GitForWindows.exe
 RUN GitForWindows.exe /log="gitforwindows.log" /suppressmsgboxes /silent
 
+ADD https://dot.net/v1/dotnet-install.ps1 dotnet-install.ps1
+RUN powershell -c "./dotnet-install.ps1 -Version 2.2.105 -InstallDir $env:ProgramFiles\\dotnet"
+RUN powershell.exe -Command $path = $env:path + ';c:\Program Files\dotnet'; Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment' -Name Path -Value $path
+
+# Exercise dotnet.exe a bit so it expands its package cache
+RUN dotnet new classlib -o dotnetCacheExpand && \
+    rd /s /q dotnetCacheExpand
+
 ADD https://aka.ms/vs/16/release/vs_buildtools.exe vs_buildtools.exe
 
 # Install Build Tools excluding workloads and components with known issues.
@@ -46,14 +54,6 @@ RUN vs_buildtools.exe -q --wait --norestart --nocache \
     --remove Microsoft.VisualStudio.Component.Windows10SDK.14393 \
     --remove Microsoft.VisualStudio.Component.Windows81SDK \
  || IF "%ERRORLEVEL%"=="3010" EXIT 0
-
-ADD https://dot.net/v1/dotnet-install.ps1 dotnet-install.ps1
-RUN powershell -c "./dotnet-install.ps1 -Version 2.2.105 -InstallDir $env:ProgramFiles\\dotnet"
-RUN powershell.exe -Command $path = $env:path + ';c:\Program Files\dotnet'; Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment' -Name Path -Value $path
-
-# Exercise dotnet.exe a bit so it expands its package cache
-RUN dotnet new classlib -o dotnetCacheExpand && \
-    rd /s /q dotnetCacheExpand
 
 ADD template /
 
