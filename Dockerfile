@@ -47,12 +47,13 @@ RUN vs_buildtools.exe -q --wait --norestart --nocache \
     --remove Microsoft.VisualStudio.Component.Windows81SDK \
  || IF "%ERRORLEVEL%"=="3010" EXIT 0
 
-# Exercise dotnet.exe a bit so it expands its package cache
-RUN dotnet new classlib -o dotnetCacheExpand \
-    && rd /s /q dotnetCacheExpand
-
 ADD https://dot.net/v1/dotnet-install.ps1 dotnet-install.ps1
 RUN powershell -c "./dotnet-install.ps1 -Version 2.2.105 -InstallDir $env:ProgramFiles\\dotnet"
+RUN powershell.exe -Command $path = $env:path + ';c:\Program Files\dotnet'; Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment' -Name Path -Value $path
+
+# Exercise dotnet.exe a bit so it expands its package cache
+RUN dotnet new classlib -o dotnetCacheExpand && \
+    rd /s /q dotnetCacheExpand
 
 ADD template /
 
